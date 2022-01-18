@@ -69,11 +69,17 @@ app.post('/campgrounds', async (req, res) => {
 app.put('/campgrounds/:id', async (req, res) => {
   const campground = await Campground.findByIdAndUpdate(
     req.params.id,
-    req.body.campground,
+    { ...req.body.campground },
     { runValidators: true, new: true }
   );
   console.log(campground);
   res.redirect(`/campgrounds/${campground._id}`);
+});
+
+// DELETE a specific campground by id
+app.delete('/campgrounds/:id', async (req, res) => {
+  await Campground.findByIdAndDelete(req.params.id);
+  res.redirect('/campgrounds');
 });
 
 app.listen(3000, () => {
