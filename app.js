@@ -35,20 +35,30 @@ app.get('/', (req, res) => {
   res.render('home');
 });
 
+// GET list of all campgrounds
 app.get('/campgrounds', async (req, res) => {
   const campgrounds = await Campground.find({});
   res.render('campgrounds/index', { campgrounds });
 });
 
+// GET form for adding campgrounds
 app.get('/campgrounds/new', (req, res) => {
   res.render('campgrounds/new');
 });
 
+// GET form for editing campground
+app.get('/campgrounds/:id/edit', async (req, res) => {
+  const campground = await Campground.findById(req.params.id);
+  res.render('campgrounds/edit', { campground });
+});
+
+// GET a campground by id
 app.get('/campgrounds/:id', async (req, res) => {
   const campground = await Campground.findById(req.params.id);
   res.render('campgrounds/show', { campground });
 });
 
+// POST a new campground to db
 app.post('/campgrounds', async (req, res) => {
   const campground = new Campground(req.body.campground);
   await campground.save();
