@@ -1,6 +1,7 @@
 const express = require('express');
 const path = require('path');
 const mongoose = require('mongoose');
+const Campground = require('./models/campground');
 
 mongoose.connect('mongodb://localhost:27017/yelp-camp', {
   useNewUrlParser: true,
@@ -17,6 +18,17 @@ const app = express();
 
 app.set('view engine', 'ejs');
 app.set('vies', path.join(__dirname, 'views'));
+
+// ************
+// MIDDLEWARE
+// ************
+
+app.use(express.urlencoded({ extended: true }));
+app.use(methodOverride('_method'));
+
+// **********
+// ROUTES
+// **********
 
 app.get('/', (req, res) => {
   res.render('home');
