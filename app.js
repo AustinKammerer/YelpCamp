@@ -65,6 +65,17 @@ app.post('/campgrounds', async (req, res) => {
   res.redirect(`/campgrounds/${campground._id}`);
 });
 
+// PUT for updating a campground
+app.put('/campgrounds/:id', async (req, res) => {
+  const campground = await Campground.findByIdAndUpdate(
+    req.params.id,
+    req.body.campground,
+    { runValidators: true, new: true }
+  );
+  console.log(campground);
+  res.redirect(`/campgrounds/${campground._id}`);
+});
+
 app.listen(3000, () => {
   console.log('LISTENING ON PORT 3000');
 });

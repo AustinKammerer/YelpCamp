@@ -7,7 +7,7 @@
     <title>Edit Campground</title>
   </head>
   <body>
-    <form method="post" action="/campgrounds">
+    <form method="POST" action="/campgrounds/<%= campground._id %>?_method=PUT">
       <div>
         <label for="title">Title</label>
         <input
@@ -26,7 +26,7 @@
           value="<%= campground.location %>"
         />
       </div>
-      <button>Add Campground</button>
+      <button>Submit Changes</button>
     </form>
     <a href="/campgrounds/<%= campground._id %>">Cancel</a>
   </body>
