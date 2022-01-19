@@ -1,6 +1,7 @@
 const express = require('express');
 const path = require('path');
 const mongoose = require('mongoose');
+const ejsMate = require('ejs-mate');
 const Campground = require('./models/campground');
 const methodOverride = require('method-override');
 const morgan = require('morgan');
@@ -18,6 +19,7 @@ db.once('open', () => {
 
 const app = express();
 
+app.engine('ejs', ejsMate);
 app.set('view engine', 'ejs');
 app.set('vies', path.join(__dirname, 'views'));
 
@@ -85,7 +87,7 @@ app.delete('/campgrounds/:id', async (req, res) => {
 });
 
 app.use((req, res) => {
-  res.send('404: NOT FOUND');
+  res.status(404).send('404: NOT FOUND');
 });
 
 app.listen(3000, () => {
