@@ -3,6 +3,7 @@ const path = require('path');
 const mongoose = require('mongoose');
 const Campground = require('./models/campground');
 const methodOverride = require('method-override');
+const morgan = require('morgan');
 
 mongoose.connect('mongodb://localhost:27017/yelp-camp', {
   useNewUrlParser: true,
@@ -23,9 +24,10 @@ app.set('vies', path.join(__dirname, 'views'));
 // ************
 // MIDDLEWARE
 // ************
-
+// app.use functions will run on every request
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride('_method'));
+app.use(morgan('tiny'));
 
 // **********
 // ROUTES
@@ -80,6 +82,10 @@ app.put('/campgrounds/:id', async (req, res) => {
 app.delete('/campgrounds/:id', async (req, res) => {
   await Campground.findByIdAndDelete(req.params.id);
   res.redirect('/campgrounds');
+});
+
+app.use((req, res) => {
+  res.send('404: NOT FOUND');
 });
 
 app.listen(3000, () => {
