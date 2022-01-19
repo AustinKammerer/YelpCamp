@@ -21,12 +21,13 @@ const app = express();
 
 app.engine('ejs', ejsMate);
 app.set('view engine', 'ejs');
-app.set('vies', path.join(__dirname, 'views'));
+app.set('views', path.join(__dirname, 'views'));
 
 // ************
 // MIDDLEWARE
 // ************
 // app.use functions will run on every request
+app.use(express.static(__dirname + '/public'));
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride('_method'));
 app.use(morgan('tiny'));
