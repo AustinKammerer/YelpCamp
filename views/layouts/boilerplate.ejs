@@ -7,8 +7,11 @@
     <title>YelpCamp</title>
     <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css" />
   </head>
-  <body>
-    <%- body %>
+  <body class="d-flex flex-column vh-100">
+    <%- include('../partials/navbar') %>
+    <main class="container mt-5"><%- body %></main>
+    <%- include('../partials/footer') %>
+
     <script src="/js/bootstrap.bundle.min.js"></script>
   </body>
 </html>
