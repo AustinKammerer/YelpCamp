@@ -2,7 +2,7 @@ const express = require('express');
 const path = require('path');
 const mongoose = require('mongoose');
 const ejsMate = require('ejs-mate');
-const { campgroundSchema } = require('./schemas');
+const { campgroundSchema, reviewSchema } = require('./schemas');
 const catchAsync = require('./utils/catchAsync');
 const ExpressError = require('./utils/ExpressError');
 const Campground = require('./models/campground');
@@ -38,6 +38,16 @@ app.use(morgan('tiny'));
 
 const validateCampground = (req, res, next) => {
   const { error } = campgroundSchema.validate(req.body); // grab the validation error, if any
+  if (error) {
+    const message = error.details.map((el) => el.message).join(','); // map the error messages
+    throw new ExpressError(400, message); // pass it to the custom error class
+  } else {
+    next();
+  }
+};
+
+const validateReview = (req, res, next) => {
+  const { error } = reviewSchema.validate(req.body); // grab the validation error, if any
   if (error) {
     const message = error.details.map((el) => el.message).join(','); // map the error messages
     throw new ExpressError(400, message); // pass it to the custom error class
@@ -129,6 +139,7 @@ app.delete(
 // POST a new review
 app.post(
   '/campgrounds/:id/reviews',
+  validateReview,
   catchAsync(async (req, res) => {
     const campground = await Campground.findById(req.params.id);
     const review = new Review(req.body.review);
