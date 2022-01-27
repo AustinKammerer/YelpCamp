@@ -5,6 +5,7 @@ const ejsMate = require('ejs-mate');
 const methodOverride = require('method-override');
 const morgan = require('morgan');
 const session = require('express-session');
+const flash = require('connect-flash');
 
 const sessionConfig = {
   secret: 'thiswillchangetoabettersecret',
@@ -48,6 +49,12 @@ app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride('_method'));
 app.use(morgan('tiny'));
 app.use(session(sessionConfig));
+app.use(flash());
+app.use((req, res, next) => {
+  res.locals.success = req.flash('success');
+  res.locals.error = req.flash('error');
+  next();
+});
 
 // **********
 // ROUTERS
