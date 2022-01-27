@@ -4,6 +4,18 @@ const mongoose = require('mongoose');
 const ejsMate = require('ejs-mate');
 const methodOverride = require('method-override');
 const morgan = require('morgan');
+const session = require('express-session');
+
+const sessionConfig = {
+  secret: 'thiswillchangetoabettersecret',
+  resave: false,
+  saveUninitialized: true,
+  cookie: {
+    httpOnly: true,
+    expires: Date.now() + 1000 * 60 * 60 * 24 * 7, // expires in one week (ms)
+    maxAge: 1000 * 60 * 60 * 24 * 7,
+  },
+};
 
 const catchAsync = require('./utils/catchAsync');
 const ExpressError = require('./utils/ExpressError');
@@ -35,6 +47,7 @@ app.use(express.static(__dirname + '/public'));
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride('_method'));
 app.use(morgan('tiny'));
+app.use(session(sessionConfig));
 
 // **********
 // ROUTERS
