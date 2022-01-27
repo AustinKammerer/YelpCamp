@@ -72,7 +72,7 @@ router.put(
       { ...req.body.campground },
       { runValidators: true, new: true }
     );
-    console.log(campground);
+    req.flash('success', 'Successfully updated campground!');
     res.redirect(`/campgrounds/${campground._id}`);
   })
 );
@@ -82,6 +82,7 @@ router.delete(
   '/:id',
   catchAsync(async (req, res, next) => {
     await Campground.findByIdAndDelete(req.params.id);
+    req.flash('success', 'Successfully deleted campground!');
     res.redirect('/campgrounds');
   })
 );
