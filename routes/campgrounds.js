@@ -5,6 +5,7 @@ const catchAsync = require('../utils/catchAsync');
 const ExpressError = require('../utils/ExpressError');
 const Campground = require('../models/campground');
 const { campgroundSchema } = require('../schemas');
+const { isLoggedIn } = require('../middleware');
 
 const validateCampground = (req, res, next) => {
   const { error } = campgroundSchema.validate(req.body); // grab the validation error, if any
@@ -26,7 +27,7 @@ router.get(
 );
 
 // GET form for adding campgrounds
-router.get('/new', (req, res, next) => {
+router.get('/new', isLoggedIn, (req, res, next) => {
   res.render('campgrounds/new');
 });
 
@@ -48,6 +49,7 @@ router.get(
 // GET form for editing campground
 router.get(
   '/:id/edit',
+  isLoggedIn,
   catchAsync(async (req, res, next) => {
     const campground = await Campground.findById(req.params.id);
     if (!campground) {
@@ -61,6 +63,7 @@ router.get(
 // POST a new campground to db
 router.post(
   '/',
+  isLoggedIn,
   validateCampground,
   catchAsync(async (req, res, next) => {
     const campground = new Campground(req.body.campground);
@@ -73,6 +76,7 @@ router.post(
 // PUT for updating a campground
 router.put(
   '/:id',
+  isLoggedIn,
   validateCampground,
   catchAsync(async (req, res, next) => {
     const campground = await Campground.findByIdAndUpdate(
@@ -88,6 +92,7 @@ router.put(
 // DELETE a specific campground by id
 router.delete(
   '/:id',
+  isLoggedIn,
   catchAsync(async (req, res, next) => {
     await Campground.findByIdAndDelete(req.params.id);
     req.flash('success', 'Successfully deleted campground!');

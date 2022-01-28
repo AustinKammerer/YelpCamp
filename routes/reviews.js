@@ -6,6 +6,7 @@ const ExpressError = require('../utils/ExpressError');
 const Campground = require('../models/campground');
 const Review = require('../models/review');
 const { reviewSchema } = require('../schemas');
+const { isLoggedIn } = require('../middleware');
 
 const validateReview = (req, res, next) => {
   const { error } = reviewSchema.validate(req.body); // grab the validation error, if any
@@ -20,6 +21,7 @@ const validateReview = (req, res, next) => {
 // POST a new review
 router.post(
   '/',
+  isLoggedIn,
   validateReview,
   catchAsync(async (req, res, next) => {
     const campground = await Campground.findById(req.params.id);
@@ -35,6 +37,7 @@ router.post(
 // DELETE a review
 router.delete(
   '/:reviewId',
+  isLoggedIn,
   catchAsync(async (req, res, next) => {
     const { id, reviewId } = req.params;
     await Campground.findByIdAndUpdate(id, { $pull: { reviews: reviewId } }); // $pull removes the reference from reviews array
