@@ -11,6 +11,9 @@
       <ul class="list-group list-group-flush">
         <li class="list-group-item"><%= campground.location %></li>
         <li class="list-group-item">$<%= campground.price %>/night</li>
+        <li class="list-group-item text-muted fst-italic">
+          Submitted by <%= campground.author.username %>
+        </li>
       </ul>
       <div class="card-body">
         <a
