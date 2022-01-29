@@ -12,14 +12,10 @@ router
   .route('/')
   .get(catchAsync(campgrounds.index))
   .post(
-    // isLoggedIn,
-    // validateCampground,
-    // catchAsync(campgrounds.createCampground)
+    isLoggedIn,
     upload.array('images'),
-    (req, res) => {
-      console.log(req.body, req.files);
-      res.send('uploaded');
-    }
+    validateCampground,
+    catchAsync(campgrounds.createCampground)
   );
 
 router.get('/new', isLoggedIn, campgrounds.renderNewForm);
