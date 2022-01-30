@@ -34,10 +34,6 @@
         <div class="valid-feedback">Looks good!</div>
       </div>
       <div class="mb-3">
-        <label for="images" class="form-label">Add Images</label>
-        <input type="file" name="images" id="images" multiple />
-      </div>
-      <div class="mb-3">
         <label for="price" class="form-label">Price</label>
         <div class="input-group mb-3">
           <span class="input-group-text" id="price-label">$</span>
@@ -66,6 +62,16 @@
 <%= campground.description %></textarea
         >
         <div class="valid-feedback">Looks good!</div>
+      </div>
+      <div class="mb-3">
+        <label for="images" class="form-label">Add Images</label>
+        <input
+          type="file"
+          class="form-control"
+          name="images"
+          id="images"
+          multiple
+        />
       </div>
       <div class="mb-3">
         <button class="btn btn-success">Submit Changes</button>
