@@ -5,6 +5,7 @@ const Review = require('./models/review');
 
 module.exports.isLoggedIn = (req, res, next) => {
   if (!req.isAuthenticated()) {
+    delete req.session.returnTo;
     // store the url they are requesting:
     req.session.returnTo = req.originalUrl;
     req.flash('error', 'Please login to continue!');
