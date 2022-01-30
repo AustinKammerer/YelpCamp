@@ -3,7 +3,7 @@
 
 <div class="row justify-content-center">
   <div class="col-md-6">
-    <div id="map" style="width: 400px; height: 300px"></div>
+    <div id="map" style="width: auto; height: 300px"></div>
     <div id="campgroundCarousel" class="carousel slide" data-bs-ride="carousel">
       <div class="carousel-inner">
         <% campground.images.forEach((image, i) => { %>
@@ -139,5 +139,6 @@
 
 <script>
   const mapToken = '<%-process.env.MAPBOX_TOKEN%>';
+  const campground = <%-JSON.stringify(campground)%>;
 </script>
 <script src="/js/showPageMap.js"></script>
