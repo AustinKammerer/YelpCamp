@@ -22,7 +22,7 @@ const campgroundRoutes = require('./routes/campgrounds');
 const reviewRoutes = require('./routes/reviews');
 const userRoutes = require('./routes/users');
 
-const dbUrl = 'mongodb://localhost:27017/yelp-camp';
+const dbUrl = process.env.DB_URL || 'mongodb://localhost:27017/yelp-camp';
 
 mongoose.connect(dbUrl, {
   useNewUrlParser: true,
@@ -51,11 +51,13 @@ app.use(methodOverride('_method'));
 app.use(morgan('tiny'));
 app.use(mongoSanitize());
 
+const secret = process.env.SECRET || 'thiswillchangetoabettersecret!';
+
 const store = MongoStore.create({
   mongoUrl: dbUrl,
   touchAfter: 24 * 60 * 60,
   crypto: {
-    secret: 'thiswillchangetoabettersecret',
+    secret,
   },
 });
 
@@ -66,7 +68,7 @@ store.on('error', (e) => {
 const sessionConfig = {
   store,
   name: 'session',
-  secret: 'thiswillchangetoabettersecret',
+  secret,
   resave: false,
   saveUninitialized: true,
   cookie: {
@@ -161,6 +163,7 @@ app.use((err, req, res, next) => {
   res.status(statusCode).render('error', { err });
 });
 
-app.listen(3000, () => {
-  console.log('LISTENING ON PORT 3000');
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`LISTENING ON PORT ${PORT}`);
 });
