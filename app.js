@@ -12,13 +12,17 @@ const session = require('express-session');
 const flash = require('connect-flash');
 const passport = require('passport');
 const LocalStrategy = require('passport-local');
+const mongoSanitize = require('express-mongo-sanitize');
+const helmet = require('helmet');
 
 const sessionConfig = {
+  name: 'session',
   secret: 'thiswillchangetoabettersecret',
   resave: false,
   saveUninitialized: true,
   cookie: {
     httpOnly: true,
+    // secure: true,
     expires: Date.now() + 1000 * 60 * 60 * 24 * 7, // expires in one week (ms)
     maxAge: 1000 * 60 * 60 * 24 * 7,
   },
@@ -55,15 +59,58 @@ app.use(express.static(__dirname + '/public'));
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride('_method'));
 app.use(morgan('tiny'));
+app.use(mongoSanitize());
 
 app.use(session(sessionConfig));
+app.use(flash());
+
+const scriptSrcUrls = [
+  'https://api.tiles.mapbox.com',
+  'https://api.mapbox.com',
+  'https://kit.fontawesome.com',
+];
+const styleSrcUrls = [
+  'https://kit-free.fontawesome.com',
+  'https://api.mapbox.com',
+  'https://api.tiles.mapbox.com',
+  'https://fonts.googleapis.com',
+  'https://use.fontawesome.com',
+];
+const connectSrcUrls = [
+  'https://api.mapbox.com',
+  'https://*.tiles.mapbox.com',
+  'https://events.mapbox.com',
+];
+const fontSrcUrls = [];
+app.use(
+  helmet.contentSecurityPolicy({
+    directives: {
+      defaultSrc: [],
+      connectSrc: ["'self'", ...connectSrcUrls],
+      scriptSrc: ["'unsafe-inline'", "'self'", ...scriptSrcUrls],
+      styleSrc: ["'self'", "'unsafe-inline'", ...styleSrcUrls],
+      workerSrc: ["'self'", 'blob:'],
+      childSrc: ['blob:'],
+      objectSrc: [],
+      imgSrc: [
+        "'self'",
+        'blob:',
+        'data:',
+        'https://res.cloudinary.com/dfuhljqvj/', //SHOULD MATCH YOUR CLOUDINARY ACCOUNT!
+        'https://images.unsplash.com',
+      ],
+      fontSrc: ["'self'", ...fontSrcUrls],
+    },
+  })
+);
+
 app.use(passport.initialize());
 app.use(passport.session()); // must come after session initialization
+
 passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
-app.use(flash());
 app.use((req, res, next) => {
   res.locals.currentUser = req.user;
   res.locals.success = req.flash('success');
