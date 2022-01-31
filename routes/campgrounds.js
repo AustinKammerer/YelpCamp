@@ -6,7 +6,12 @@ const upload = multer({ storage });
 
 const catchAsync = require('../utils/catchAsync');
 const campgrounds = require('../controllers/campgrounds');
-const { isLoggedIn, isAuthor, validateCampground } = require('../middleware');
+const {
+  isLoggedIn,
+  isAuthor,
+  validateCampground,
+  isValidIdFormat,
+} = require('../middleware');
 
 router
   .route('/')
@@ -22,8 +27,9 @@ router.get('/new', isLoggedIn, campgrounds.renderNewForm);
 
 router
   .route('/:id')
-  .get(catchAsync(campgrounds.showCampground))
+  .get(isValidIdFormat, catchAsync(campgrounds.showCampground))
   .put(
+    isValidIdFormat,
     isLoggedIn,
     isAuthor,
     upload.array('images'),
@@ -34,6 +40,7 @@ router
 
 router.get(
   '/:id/edit',
+  isValidIdFormat,
   isLoggedIn,
   isAuthor,
   catchAsync(campgrounds.renderEditForm)

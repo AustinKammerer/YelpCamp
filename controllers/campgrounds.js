@@ -14,7 +14,8 @@ module.exports.renderNewForm = (req, res, next) => {
 };
 
 module.exports.showCampground = async (req, res, next) => {
-  const campground = await Campground.findById(req.params.id)
+  const { id } = req.params;
+  const campground = await Campground.findById(id)
     .populate({ path: 'reviews', populate: { path: 'author' } })
     .populate('author');
   if (!campground) {
@@ -44,7 +45,8 @@ module.exports.createCampground = async (req, res, next) => {
 };
 
 module.exports.renderEditForm = async (req, res, next) => {
-  const campground = await Campground.findById(req.params.id);
+  const { id } = req.params;
+  const campground = await Campground.findById(id);
   if (!campground) {
     req.flash('error', 'Campground not found!');
     return res.redirect('/campgrounds');
@@ -78,6 +80,7 @@ module.exports.updateCampground = async (req, res, next) => {
 };
 
 module.exports.deleteCampground = async (req, res, next) => {
+  const { id } = req.params;
   await Campground.findByIdAndDelete(req.params.id);
   req.flash('success', 'Successfully deleted campground!');
   res.redirect('/campgrounds');

@@ -1,3 +1,4 @@
+const ObjectID = require('mongoose').Types.ObjectId;
 const ExpressError = require('./utils/ExpressError');
 const { campgroundSchema, reviewSchema } = require('./schemas');
 const Campground = require('./models/campground');
@@ -14,9 +15,22 @@ module.exports.isLoggedIn = (req, res, next) => {
   next();
 };
 
+module.exports.isValidIdFormat = (req, res, next) => {
+  const { id } = req.params;
+  if (!ObjectID.isValid(id)) {
+    req.flash('error', 'Incorrect ID format - please, try again!');
+    return res.redirect('/campgrounds');
+  }
+  next();
+};
+
 module.exports.isAuthor = async (req, res, next) => {
   const { id } = req.params;
   const campground = await Campground.findById(id);
+  if (!campground) {
+    req.flash('error', 'Campground not found!');
+    return res.redirect(`/campgrounds/`);
+  }
   // check if the user is the author of the post
   if (!campground.author.equals(req.user._id)) {
     req.flash('error', "You don't have permission to do that!");
@@ -28,6 +42,10 @@ module.exports.isAuthor = async (req, res, next) => {
 module.exports.isReviewAuthor = async (req, res, next) => {
   const { id, reviewId } = req.params;
   const review = await Review.findById(reviewId);
+  if (!review) {
+    req.flash('error', 'Review not found!');
+    return res.redirect(`/campgrounds/`);
+  }
   // check if the user is the author of the review
   if (!review.author.equals(req.user._id)) {
     req.flash('error', "You don't have permission to do that!");
