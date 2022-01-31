@@ -9,24 +9,12 @@ const ejsMate = require('ejs-mate');
 const methodOverride = require('method-override');
 const morgan = require('morgan');
 const session = require('express-session');
+const MongoStore = require('connect-mongo');
 const flash = require('connect-flash');
 const passport = require('passport');
 const LocalStrategy = require('passport-local');
 const mongoSanitize = require('express-mongo-sanitize');
 const helmet = require('helmet');
-
-const sessionConfig = {
-  name: 'session',
-  secret: 'thiswillchangetoabettersecret',
-  resave: false,
-  saveUninitialized: true,
-  cookie: {
-    httpOnly: true,
-    // secure: true,
-    expires: Date.now() + 1000 * 60 * 60 * 24 * 7, // expires in one week (ms)
-    maxAge: 1000 * 60 * 60 * 24 * 7,
-  },
-};
 
 const User = require('./models/user');
 const ExpressError = require('./utils/ExpressError');
@@ -34,7 +22,9 @@ const campgroundRoutes = require('./routes/campgrounds');
 const reviewRoutes = require('./routes/reviews');
 const userRoutes = require('./routes/users');
 
-mongoose.connect('mongodb://localhost:27017/yelp-camp', {
+const dbUrl = 'mongodb://localhost:27017/yelp-camp';
+
+mongoose.connect(dbUrl, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
@@ -60,6 +50,32 @@ app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride('_method'));
 app.use(morgan('tiny'));
 app.use(mongoSanitize());
+
+const store = MongoStore.create({
+  mongoUrl: dbUrl,
+  touchAfter: 24 * 60 * 60,
+  crypto: {
+    secret: 'thiswillchangetoabettersecret',
+  },
+});
+
+store.on('error', (e) => {
+  console.log('Session Store Error!', e);
+});
+
+const sessionConfig = {
+  store,
+  name: 'session',
+  secret: 'thiswillchangetoabettersecret',
+  resave: false,
+  saveUninitialized: true,
+  cookie: {
+    httpOnly: true,
+    // secure: true,
+    expires: Date.now() + 1000 * 60 * 60 * 24 * 7, // expires in one week (ms)
+    maxAge: 1000 * 60 * 60 * 24 * 7,
+  },
+};
 
 app.use(session(sessionConfig));
 app.use(flash());
